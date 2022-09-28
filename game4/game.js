@@ -5,129 +5,150 @@ const $ = (foo) => {
   return document.querySelector(foo);
 };
 
-// Create game object
+// Game object
 const game = {
+  // Game state
   cards: [],
-  icons: ['<i class="fa-solid fa-mug-saucer"></i>', '<i class="fa-solid fa-seedling"></i>'],
-  current: null,
-  tries: 0,
-  done: false,
-};
+  currentCard: null,
 
-// Create array
-for (let i = 0; i < game.icons.length; i++) {
-  // Push first card to array
-  game.cards.push({
-    name: `card${i}`,
-    clicked: false,
-    disabled: false,
-  });
+  players: [],
+  currentPlayer: 0,
 
-  // Push second card to array
-  game.cards.push({
-    name: `card${i}`,
-    clicked: false,
-    disabled: false,
-  });
-}
+  finished: false,
+  progress: 0,
 
-// Shuffle cards array
-game.cards.sort(() => Math.random() - 0.5);
+  // Game config
+  config: {
+    playerCount: 1,
+    cardCount: 10,
+    shuffleCards: false,
+  },
 
-// Toggles disabled state on object based on name parameter
-const addDisabled = (name) => {
-  game.cards
-    .filter((card) => {
-      return card.name == name;
-    })
-    .forEach((card) => {
-      card.disabled = true;
-    });
-};
+  // Game methods
+  start() {
+    // Reset inner html of game element
+    $("#game").innerHTML = "";
 
-// Toggles clicked state on object based on name parameter
-const removeClicked = (name) => {
-  game.cards
-    .filter((card) => {
-      return card.name == name;
-    })
-    .forEach((card) => {
-      card.clicked = false;
-    });
-};
+    // Create new cards element, and append to game element
+    var cardList = document.createElement("ul");
+    cardList.setAttribute("id", "cards");
 
-// Update function, updates game logic
-const update = (event, card) => {
-  // Update tries counter
-  game.tries++;
+    $("#game").appendChild(cardList);
 
-  // Checks previous guess against current card name
-  if (game.current == card.name) {
-    addDisabled(card.name);
-    removeClicked(card.name);
-  }
+    // Populate game cards array
+    for (let i = 0; i < Math.floor(this.config.cardCount / 2); i++) {
+      // Push first object to array
+      this.cards.push({
+        pairId: i,
+        disabled: false,
+      });
 
-  // If previous guess is wrong, remove clicked class
-  removeClicked(game.current);
-
-  // Update current state
-  game.current = event.target.attributes.name.value;
-
-  // Track game done state
-  game.done = true;
-  game.cards.forEach((card) => {
-    if (!card.disabled){
-        game.done = false;
-    }
-  })
-
-  // Check if game is done
-  if (game.done){
-    alert("Game over")
-  }
-};
-
-// Render method
-const render = () => {
-  $("#cards").innerHTML = "";
-  game.cards.forEach((card, index) => {
-    // Create card element
-    var cardElement = document.createElement("li");
-
-    // Set card attributes
-    cardElement.setAttribute("name", card.name);
-    cardElement.classList.add("card");
-    cardElement.innerText = card.name;
-
-    if (card.disabled) {
-      cardElement.classList.add("card-disabled");
-    }
-
-    if (card.clicked) {
-      cardElement.classList.add("card-clicked");
-    }
-
-    if (!card.disabled && !card.clicked) {
-      cardElement.addEventListener("click", (e) => {
-        // If card is already clicked, do nothing
-        if (card.clicked) {
-          return;
-        }
-
-        // Update clicked state
-        card.clicked = true;
-
-        // Update game logic
-        update(e, card);
-
-        // Re-render
-        render();
+      // Push second object to array
+      this.cards.push({
+        pairId: i,
+        disabled: false,
       });
     }
 
-    // Append new element as child
-    $("#cards").appendChild(cardElement);
-  });
+    // Shuffle cards based on config
+    if (this.config.shuffleCards) {
+      this.cards.sort(() => Math.random() - 0.5);
+    }
+
+    // Generate players
+    for (let i = 0; i < this.config.playerCount; i++) {
+      this.players.push({
+        name: prompt("Indtast dit navn") || "Benny",
+        color: prompt("Indtast en hex kode") || "#262626",
+        score: 0,
+      });
+    }
+
+    // Initial render
+    this.render();
+  },
+
+  update() {
+    // Get every card which is disabled
+    const finishedCount = this.cards.filter((card) => {
+      return card.disabled == true;
+    }).length;
+
+    // Update progress
+    this.progress = (finishedCount / this.config.cardCount) * 100;
+
+    // Check if game is done
+    if (finishedCount == this.config.cardCount) {
+      this.finished = true;
+      return alert("Done");
+    }
+  },
+
+  render() {
+    // Render cards
+    this.cards.forEach((card) => {
+      // Create card element
+      var cardElement = document.createElement("li");
+
+      // Add name attribute
+      cardElement.setAttribute("name", card.pairId);
+
+      // Card card class
+      cardElement.classList.add("card");
+      cardElement.innerHTML = `<span>${card.pairId}</span>`;
+
+      // Confitionally add eventlistener
+      if (!card.disabled) {
+        cardElement.addEventListener("click", (e) => {
+          this.handleClick(e, card);
+        });
+      }
+
+      // Append to parent element
+      $("#cards").appendChild(cardElement);
+    });
+  },
+
+  // Logic methods
+  handleClick(e, card) {
+    if (card.disabled) {
+      return;
+    }
+
+    // Removed card-clicked class from every card element
+    $(".card").forEach((element) => {
+      element.classList.remove("card-clicked");
+    });
+
+    // Check for duplicates in previous move
+    if (this.currentCard && this.currentCard.pairId == card.pairId) {
+      return this.addDisabled(card);
+    }
+
+    // Adds card-clicked to click event target
+    e.target.classList.add("card-clicked");
+    this.currentCard = card;
+    this.update();
+  },
+
+  addDisabled(card) {
+    $(`[name="${card.pairId}"]`).forEach((element) => {
+      element.removeEventListener("click", null);
+      element.classList.add("card-disabled");
+      element.style.backgroundColor = this.players[this.currentPlayer].color;
+    });
+
+    // Update disabled attributes on card elements
+    for (let i = 0; i < this.cards.length; i++) {
+      if (this.cards[i].pairId == card.pairId) {
+        this.cards[i].disabled = true;
+      }
+    }
+
+    // Increase score of player who made the move
+    this.players[this.currentPlayer].score++;
+    this.update();
+  },
 };
 
-render();
+game.start();
