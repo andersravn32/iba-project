@@ -5,4 +5,16 @@ body{display: flex; justify-content: center; align-items: center;}
     padding:20px;
     font-size:3em;
     letter-spacing: 1rem;
+    max-width: 500px;
+}
+#btnContainer button{
+    font-family: monospace;
+    font-size: x-large;
+    margin-right:0.5em;
+    text-transform: uppercase;
+}
+#statusWord{
+    font-family:'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    text-align:center;
 }
