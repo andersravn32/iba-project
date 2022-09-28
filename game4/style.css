@@ -28,8 +28,12 @@
     background-color:#262625;
     color:white;
     cursor:pointer;
-    transition:.4s;
+    transition:.2s ease;
     border-radius: 8px;
+}
+
+.card span{
+    visibility: hidden;
 }
 
 .card-disabled{
@@ -37,6 +41,14 @@
     cursor:not-allowed;
 }
 
+.card-disabled span{
+    visibility: visible;
+}
+
 .card-clicked{
     transform:scale(1.15);
+}
+
+.card-clicked span{
+    visibility: visible;
 }
