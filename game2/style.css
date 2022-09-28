@@ -1,0 +1,8 @@
+HTML, body{margin:0;padding:0;box-sizing: border-box; height:100%;}
+body{display: flex; justify-content: center; align-items: center;}
+.container{
+    background-color:beige;
+    padding:20px;
+    font-size:3em;
+    letter-spacing: 1rem;
+}
