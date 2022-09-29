@@ -1,3 +1,4 @@
+// Shorthand query selector function
 const $ = (foo) => {
   if (document.querySelectorAll(foo).length > 1) {
     return document.querySelectorAll(foo);
@@ -19,21 +20,16 @@ const game = {
 
   // Game config
   config: {
-    playerCount: 1,
-    cardCount: 10,
-    shuffleCards: false,
+    playerCount: 2,
+    cardCount: 100,
+    shuffleCards: true,
   },
 
   // Game methods
   start() {
-    // Reset inner html of game element
-    $("#game").innerHTML = "";
-
     // Create new cards element, and append to game element
     var cardList = document.createElement("ul");
     cardList.setAttribute("id", "cards");
-
-    $("#game").appendChild(cardList);
 
     // Populate game cards array
     for (let i = 0; i < Math.floor(this.config.cardCount / 2); i++) {
@@ -63,6 +59,10 @@ const game = {
         score: 0,
       });
     }
+    $("#game").appendChild(cardList);
+
+    // Initial update
+    this.update();
 
     // Initial render
     this.render();
@@ -76,6 +76,27 @@ const game = {
 
     // Update progress
     this.progress = (finishedCount / this.config.cardCount) * 100;
+
+    // Reset innerHTML of players element
+    $("#scoreboard").querySelector(".players").innerHTML = "";
+
+    // Create players elements
+    this.players.forEach((player) => {
+      const playerElement = document.createElement("div");
+      playerElement.classList.add("player");
+      playerElement.style.color = player.color;
+
+      // Check if player if active
+      if (player == this.players[this.currentPlayer]) {
+        playerElement.classList.add("player-active");
+      }
+
+      playerElement.innerHTML = `<p>${player.name}</p><p>Score: ${player.score}`;
+      $("#scoreboard").querySelector(".players").appendChild(playerElement);
+    });
+
+    // Update innerText to reflect current state of the game.
+    $(".progress").innerText = `${this.progress}% gennemført - ${finishedCount}/${this.config.cardCount}`;
 
     // Check if game is done
     if (finishedCount == this.config.cardCount) {
@@ -111,10 +132,17 @@ const game = {
 
   // Logic methods
   handleClick(e, card) {
+
+    // Disable event if card is disabled eg. a pair was found
     if (card.disabled) {
       return;
     }
-
+    
+    // Check that classList of the target does not include card-clicked, to prevent bug
+    if ([...e.target.classList].includes("card-clicked")){
+      return;
+    }
+    
     // Removed card-clicked class from every card element
     $(".card").forEach((element) => {
       element.classList.remove("card-clicked");
@@ -125,10 +153,20 @@ const game = {
       return this.addDisabled(card);
     }
 
-    // Adds card-clicked to click event target
-    e.target.classList.add("card-clicked");
-    this.currentCard = card;
-    this.update();
+    if (!this.currentCard) {
+      // Adds card-clicked to click event target
+      e.target.classList.add("card-clicked");
+      this.currentCard = card;
+      return this.update();
+    }
+
+    if (!this.players[this.currentPlayer + 1]) {
+      this.currentPlayer = 0;
+    } else {
+      this.currentPlayer++;
+    }
+    this.currentCard = null;
+    return this.update();
   },
 
   addDisabled(card) {
@@ -147,6 +185,7 @@ const game = {
 
     // Increase score of player who made the move
     this.players[this.currentPlayer].score++;
+    this.currentCard = null;
     this.update();
   },
 };
