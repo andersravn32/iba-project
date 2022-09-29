@@ -1,0 +1,65 @@
+body {
+    background-color: rgb(229, 244, 255);
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(7, 100px);
+    grid-template-rows: repeat(6, 100px);
+    height: 600px;
+    width: 700px;
+    background-color: rgb(76, 127, 204);
+    border: 6px solid rgb(76, 127, 204);
+    box-shadow: 1px 1px 0px 0px rgb(44, 69, 151),
+                2px 2px 0px 0px rgb(44, 69, 151),
+                3px 3px 0px 0px rgb(44, 69, 151),
+                4px 4px 0px 0px rgb(44, 69, 151),
+                5px 5px 0px 0px rgb(44, 69, 151),
+                6px 6px 0px 0px rgb(44, 69, 151),
+                7px 7px 0px 0px rgb(44, 69, 151),
+                8px 8px 0px 0px rgb(44, 69, 151);
+}
+
+#flex {
+    display: flex;
+    justify-content: center;
+}
+
+#grid div {
+    border-radius: 50%;
+    background-color: rgb(64, 80, 163);
+    box-shadow: inset 2px 2px 4px 2px rgba(58, 56, 156, 0.449);
+    margin: 5px;
+}
+
+.redPlayer {
+    background-color: rgb(239, 53, 53) !important;
+    border-radius: 50%;
+    box-shadow: inset 2px 2px 1px 2px rgb(154, 10, 48);
+}
+
+.yellowPlayer {
+    background-color: rgb(244, 244, 52) !important;
+    border-radius: 50%;
+    box-shadow: inset 2px 2px 1px 2px rgb(190, 219, 41);
+}
+
+#currentPlayer {
+    text-align: center;
+}
+
+#winner {
+    text-align: center;
+}
+
+#scoreboard {
+    background-color: rgb(23, 32, 58);
+    width: 300px;
+    position: absolute;
+    top: 35%;
+}
+
+#theCurrentTurn, #timer, #titelScoreboard {
+    margin-left: 10px;
+    color: white;
+}
