@@ -1,85 +1,75 @@
-(function() {
-
-	var probabilityOfOn = 30, cellState;
-
-	var gameSize = 5;
-
-
-	var cellArray = [];
-	cellArray = document.getElementsByClassName("lightit");
-	winCont = document.getElementsByClassName("winner-cont")[0];
+window.onload = function() {
+	let functionOn = 30
+	let statusBubble;
+	let bubbleNeighbour = [];
+	let size = 5;
+	let bubbleArray = [];
+	bubbleArray = document.getElementsByClassName("Lighton");
+	winner = document.getElementsByClassName("winner")[0];
 
 
-	var cellNeighborArray = [];
-	for(var i = 0, j = cellArray.length; i < j; i++) {
 
-		if(i === 0) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i + 1], cellArray[i + gameSize]];
+	for (let i = 0; i < bubbleArray.length; i++) {
+		if (i === 0) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i + 1], bubbleArray[i + size]];
 
-		} else if(i === gameSize * gameSize - 1) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i - 1], cellArray[i - gameSize]];
+		} else if (i === size * size - 1) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i - 1], bubbleArray[i - size]];
 
-		} else if(i === gameSize * gameSize - gameSize) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i + 1], cellArray[i - gameSize]];
+		} else if (i === size * size - size) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i + 1], bubbleArray[i - size]];
 
-		} else if(i === gameSize - 1) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i - 1], cellArray[i + gameSize]];
+		} else if (i === size - 1) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i - 1], bubbleArray[i + size]];
 
-		} else if(i % gameSize === 0) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i + 1], cellArray[i - gameSize], cellArray[i + gameSize]];
+		} else if (i % size === 0) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i + 1], bubbleArray[i - size], bubbleArray[i + size]];
 
-		} else if(i % gameSize === gameSize - 1) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i - 1], cellArray[i - gameSize], cellArray[i + gameSize]];
+		} else if (i % size === size - 1) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i - 1], bubbleArray[i - size], bubbleArray[i + size]];
 
-		} else if(i < gameSize) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i - 1], cellArray[i + 1], cellArray[i + gameSize]];
+		} else if (i < size) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i - 1], bubbleArray[i + 1], bubbleArray[i + size]];
 
-		} else if(i >= gameSize * gameSize - gameSize) {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i - 1], cellArray[i + 1], cellArray[i - gameSize]];
+		} else if (i >= size * size - size) {
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i - 1], bubbleArray[i + 1], bubbleArray[i - size]];
 
 		} else {
-			cellNeighborArray[i] = [cellArray[i], cellArray[i - 1], cellArray[i + 1], cellArray[i - gameSize], cellArray[i + gameSize]];
+			bubbleNeighbour[i] = [bubbleArray[i], bubbleArray[i - 1], bubbleArray[i + 1], bubbleArray[i - size], bubbleArray[i + size]];
 		};
 	}
 
-
-	start();
+    start();
 
 	function start() {
-		for(var ii = 0, jj = cellArray.length; ii < jj; ii++) {
-			cellState = Math.floor(Math.random() * 100);
-			if(cellState < probabilityOfOn) {
-				cellArray[ii].classList.toggle("light-on");
+		for (let j = 0; j < bubbleArray.length; j++) {
+			statusBubble = Math.floor(Math.random() * 100);
+			if (statusBubble < functionOn) {
+				bubbleArray[j].classList.toggle("light-on");
 			}
 
-			cellArray[ii].removeEventListener("click", lightClick);
-			cellArray[ii].addEventListener("click", lightClick);
+			bubbleArray[j].removeEventListener("click", lightClick);
+			bubbleArray[j].addEventListener("click", lightClick);
 		}
-	}	
+	}
+	
 
 	function lightClick() {
 		this.classList.toggle("light-on");
-		for(var iii = 0, jjj = cellNeighborArray.length; iii < jjj; iii++) {
-			if(this === cellNeighborArray[iii][0]) {
-				for(var iiii = 1; iiii < cellNeighborArray[iii].length; iiii++) {
-					cellNeighborArray[iii][iiii].classList.toggle("light-on");
+		for (let k = 0; k < bubbleNeighbour.length; k++) {
+			if (this === bubbleNeighbour[k][0]) {
+				for (let l = 1; l < bubbleNeighbour[k].length; l++) {
+					bubbleNeighbour[k][l].classList.toggle("light-on");
 				}
 			}
 		}
 
-		if(testWinner()) {
-			winCont.style.display = "block";
-			document.getElementsByClassName('reset-btn')[0].addEventListener("click", function() {
-				start();
-				winCont.style.display = "none";
-			});
-		};
 	}
 
 	function testWinner() {
-		if(document.getElementsByClassName("light-on")[0]) {
+		if (document.getElementsByClassName("light-on")[0]) {
 			return false;
 		};
 		return true;
 	}
-})();
+};
