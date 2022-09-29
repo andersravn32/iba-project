@@ -166,6 +166,100 @@ function checkConnect() {
               checkConnect()
               addTurn()
             } 
+          } else if(fields[x + 14]. classList.contains("filled") &&!fields[x + 7].classList.contains("") && gameOver == "false") {
+            if (currentPlayer == "Red players") {
+                fields[x + 7].classList.add("filled")
+                fields[x + 7].classList.add("redPlayer")
+                currentPlayer = "Yellow players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+  
+                checkConnect()
+              } else if (currentPlayer == "Yellow players"){
+                fields[x + 7].classList.add("filled")
+                fields[x + 7].classList.add("yellowPlayer")
+                currentPlayer = "Red players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+                
+  
+                checkConnect()
+                addTurn()
+              } 
+
+          } else if(fields[x + 21]. classList.contains("filled") &&!fields[x + 14].classList.contains("") && gameOver == "false") {
+            if (currentPlayer == "Red players") {
+                fields[x + 14].classList.add("filled")
+                fields[x + 14].classList.add("redPlayer")
+                currentPlayer = "Yellow players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+  
+                checkConnect()
+              } else if (currentPlayer == "Yellow players"){
+                fields[x + 14].classList.add("filled")
+                fields[x + 14].classList.add("yellowPlayer")
+                currentPlayer = "Red players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+                
+  
+                checkConnect()
+                addTurn()
+              } 
+
+          } else if(fields[x + 28]. classList.contains("filled") &&!fields[x + 21].classList.contains("") && gameOver == "false") {
+            if (currentPlayer == "Red players") {
+                fields[x + 21].classList.add("filled")
+                fields[x + 21].classList.add("redPlayer")
+                currentPlayer = "Yellow players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+  
+                checkConnect()
+              } else if (currentPlayer == "Yellow players"){
+                fields[x + 21].classList.add("filled")
+                fields[x + 21].classList.add("yellowPlayer")
+                currentPlayer = "Red players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+                
+  
+                checkConnect()
+                addTurn()
+              } 
+
+          } else if(fields[x + 35]. classList.contains("filled") &&!fields[x + 28].classList.contains("") && gameOver == "false") {
+            if (currentPlayer == "Red players") {
+                fields[x + 28].classList.add("filled")
+                fields[x + 28].classList.add("redPlayer")
+                currentPlayer = "Yellow players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+  
+                checkConnect()
+              } else if (currentPlayer == "Yellow players"){
+                fields[x + 28].classList.add("filled")
+                fields[x + 28].classList.add("yellowPlayer")
+                currentPlayer = "Red players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+                
+  
+                checkConnect()
+                addTurn()
+              } 
+
+          } else if(fields[x + 42]. classList.contains("filled") &&!fields[x + 35].classList.contains("") && gameOver == "false") {
+            if (currentPlayer == "Red players") {
+                fields[x + 35].classList.add("filled")
+                fields[x + 35].classList.add("redPlayer")
+                currentPlayer = "Yellow players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+  
+                checkConnect()
+              } else if (currentPlayer == "Yellow players"){
+                fields[x + 35].classList.add("filled")
+                fields[x + 35].classList.add("yellowPlayer")
+                currentPlayer = "Red players"
+                showCurrentPlayer.innerHTML = "It is " + currentPlayer + " turn"
+                
+  
+                checkConnect()
+                addTurn()
+              } 
           }
         }
       }        
@@ -213,6 +307,32 @@ function timer() {
     if(gameOver == "false") {
     } else {
         clearInterval(interval)
+
+
+        var secondsString = seconds.toString();
+        var centisecondsString = centiseconds.toString();
+        var turnsString = currentTurn.toString();
+
+        window.localStorage.setItem("latestSeconds", secondsString);
+        window.localStorage.setItem("latestCentiseconds", centisecondsString);
+        window.localStorage.setItem("latestNumberOfTurns", turnsString);
     }
 }
 }
+
+var latestSeconds = document.getElementById("latestSeconds");
+var latestCentiseconds = document.getElementById("latestCentiseconds");
+var latestNumberOfTurns = document.getElementById("latestNumberOfTurns");
+
+
+latestSeconds.innerHTML = localStorage.getItem("latestSeconds");
+latestCentiseconds.innerHTML = localStorage.getItem("latestCentiseconds");
+
+if(currentTurn <= 9) {
+latestNumberOfTurns.innerHTML = "Turns: " + "0" + localStorage.getItem("latestNumberOfTurns");
+} else {
+    latestNumberOfTurns.innerHTML = "Turns: " + localStorage.getItem("latestNumberOfTurns");
+}
+
+
+

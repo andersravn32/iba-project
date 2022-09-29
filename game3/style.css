@@ -59,7 +59,7 @@ body {
     top: 35%;
 }
 
-#theCurrentTurn, #timer, #titelScoreboard {
-    margin-left: 10px;
+#theCurrentTurn, #timer, #titelScoreboard, #latestNumberOfTurns, #latestTimer, #latestScore {
+    margin-left: 20px;
     color: white;
 }
