@@ -2,39 +2,65 @@
 const alphabet = [
     "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","æ","ø","å"
 ];
-const players = [
-];
+const players = [];
 let cplayer = null;
-const setPlayers = () =>{
-    cplayer = null;
+let game = document.getElementById('game');
+let wo = [];
+let userTries = 0;
+let maxTries = 4;
 
+let playReset = document.createElement('button');
+playReset.innerText = "Spil / reset";
+
+// Run this to setup players
+const setPlayers = () =>{
+    cplayer = null; // Reset current player
+    const promptPlayer = (number) =>{
+        let playername = prompt("Spiller " + number + ":");
+        console.log(playername);
+        if(playername == "" || playername == undefined){
+            return "Spiller " + number;
+        }else{
+            return playername;
+        }
+    }
+    let playerone = promptPlayer(1);
+    let playertwo = promptPlayer(2);
     players.push({
-        name:prompt("Player One: "),
+        name:playerone,
         turn: true,
         score:0
     });
     players.push({
-        name:prompt("Player two: "),
+        name:playertwo,
         turn: false,
         score:0
     });
 }
-let userTries = 0;
-let maxTries = 4;
 // main game
 const playGame = (players) =>{
-    let game = document.getElementById('game');
-    game.innerHTML = "";
+    game.innerHTML = ""; // reset game
 
+    // put reset in
+    game.append(playReset);
+
+    // check whos turn is it
     if(players[0].turn == true){
         cplayer = 0;
     }else{
         cplayer = 1;
     }
 
-    let word = prompt(players[cplayer].name + ", skriv ord / ordene").toLowerCase();
+    const promptWord = () => {
+        let promptedWord = prompt(players[cplayer].name + ", skriv ord / ordene").toLowerCase();
+        if(promptedWord == ""){
+            return promptWord();
+        }
+        return promptedWord;
+    }
+    let word = promptWord();
     // let exampeString = "test";
-    let wo = createWordsObject(word);
+    wo = createWordsObject(word);
     let statusWord = document.createElement('p');
     statusWord.setAttribute('id', 'statusWord');
     game.append(statusWord);
@@ -43,6 +69,7 @@ const playGame = (players) =>{
     
     // console.log(wo);
     buildButtons(game, wo);
+
 }
 // Create a words object
 const createWordsObject = (word) =>{
@@ -56,30 +83,36 @@ const createWordsObject = (word) =>{
     }
     return wordArray;
 }
+
+// Append button
+const appendButton = () =>{
+
+}
 // Button build function:
 const buildButtons = (game, wo) =>{
     let btnContainer = document.createElement('div');
     btnContainer.setAttribute('id', 'btnContainer');
+    game.append(btnContainer);
     for(let i = 0; i < alphabet.length; i++){
         let button = document.createElement('button');
         button.innerText = alphabet[i];
         button.addEventListener('click', (event) => {
             let letter = event.target.innerText;
+            event.target.classList.add('taken');
             event.target.setAttribute('disabled','');
             checkForLetter(letter, wo);
-        })
+        });
         btnContainer.append(button);
-        game.append(btnContainer);
     }
 }
 // Build word letters
-const buildTheLetters = (wordObj) =>{
+const buildTheLetters = (wo) =>{
     let sw = document.getElementById('statusWord');
     letters = "";
-    for(let i = 0; wordObj.length > i; i++){
-        if(wordObj[i].on == true){
-            letters = letters + wordObj[i].letter;
-        }else if(wordObj[i].letter == " "){
+    for(let i = 0; wo.length > i; i++){
+        if(wo[i].on == true){
+            letters = letters + wo[i].letter;
+        }else if(wo[i].letter == " "){
             letters = letters + " ";
         }else{
             letters = letters + "_";
@@ -87,11 +120,20 @@ const buildTheLetters = (wordObj) =>{
     }
     sw.innerText = letters;
 }
+// Show all letters:
+const showAllLetters = (wo) =>{
+    let sw = document.getElementById('statusWord');
+    letters = "";
+    for(let i = 0; wo.length > i; i++){
+        letters = letters + wo[i].letter;
+    }
+    sw.innerText = letters;
+}
 // This is function when click on a letter:
 const checkForLetter = (letter, wo) =>{
     let noMatch = true;
     for(let i = 0; wo.length > i; i++){
-        if(wo[i].letter == letter){
+        if(wo[i].letter == letter.toLowerCase()){
             //console.log("We have a match!");
             wo[i].on = true;
             noMatch = false;
@@ -108,10 +150,10 @@ const checkForLetter = (letter, wo) =>{
 }
 // Check if user wins 
 // Check if user have all word on.
-const checkForWin = (myobj) =>{
+const checkForWin = (wo) =>{
     let winner = true;
-    for(let i = 0; myobj.length > i; i++){
-        if(myobj[i].on == false){
+    for(let i = 0; wo.length > i; i++){
+        if(wo[i].on == false){
             winner = false;
             //console.log("No winner");
         }
@@ -122,6 +164,7 @@ const checkForWin = (myobj) =>{
         stopGame(cplayer, userTries);
     }
     if(userTries >= maxTries){
+        showAllLetters(wo);
         console.log("Max tries");
         // We have a max tries
         stopGame(cplayer, userTries);
@@ -130,17 +173,14 @@ const checkForWin = (myobj) =>{
 }
 // Lost or win:
 const stopGame = (cplayer, score) => {
-    let game = document.getElementById('game');
-    game.innerHTML = "";
     let player = players[cplayer];
     if(score == maxTries){
         console.log("Player " + player.name + " lost score");
-        // save score to ls
+        // save score to ls or print to html
     }else{
         console.log("Player " + player.name + " have score: " + score);
-        // save score to ls
+        // save score to ls or print to html
     }
-    console.log(players);
     if(players[0].turn == true){
         players[0].turn = false;
         players[1].turn = true;
@@ -148,8 +188,19 @@ const stopGame = (cplayer, score) => {
         players[1].turn = false;
         players[0].turn = true;
     }
-    playGame(players);
     userTries = 0;
+    let nextPlayer = document.createElement('button');
+    nextPlayer.innerText = "Næste spiller";
+    game.append(nextPlayer);
+    nextPlayer.addEventListener('click', (e) => {
+        game.innerHTML = ""; // Remove elements from game
+        playGame(players);
+    })
 }
-setPlayers();
-playGame(players);
+playReset.addEventListener('click',() =>{
+    game.innerHTML = ""; // remove all from game
+    userTries = 0; // Reset usertries
+    setPlayers();
+    playGame(players);
+})
+game.append(playReset);
