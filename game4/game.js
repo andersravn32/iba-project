@@ -20,7 +20,7 @@ const game = {
 
   // Game config
   config: {
-    playerCount: 2,
+    playerCount: 1,
     cardCount: 100,
     shuffleCards: true,
   },
@@ -153,6 +153,7 @@ const game = {
       return this.addDisabled(card);
     }
 
+    // Adds card-clicked class to card that triggered event
     if (!this.currentCard) {
       // Adds card-clicked to click event target
       e.target.classList.add("card-clicked");
@@ -160,6 +161,7 @@ const game = {
       return this.update();
     }
 
+    // Switch players
     if (!this.players[this.currentPlayer + 1]) {
       this.currentPlayer = 0;
     } else {
@@ -169,6 +171,7 @@ const game = {
     return this.update();
   },
 
+  // Method for added disabled class to every element of a specific pair
   addDisabled(card) {
     $(`[name="${card.pairId}"]`).forEach((element) => {
       element.removeEventListener("click", null);
