@@ -5,11 +5,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="game2.css">
 </head>
 <body>
-    <div class="container" id="game">
+    <div id="gameContainer">
+        <h1>Hangman</h1>
+        <button id="oneplayerBtn">1 spiller: Nyt spil</button>
+        <button id="twoPlayerBtn">2 spillere: Nyt spil</button>
     </div>
-    <script src="game2.js"></script>
+    <div id="stats">
+        <h3>Top 5 spillere i 2 player:</h3>
+        <ol>
+            <li>Kunuutster</li>
+            <li>Last man on earth</li>
+        </ol>
+        <h3>Top 5 spillere i 1 player:</h3>
+        <ol>
+            <li>Molly</li>
+            <li>Line</li>
+        </ol>
+    </div>
+    <script src="game.js"></script>
 </body>
 </html>
