@@ -1,19 +1,28 @@
 HTML, body{margin:0;padding:0;box-sizing: border-box; height:100%;}
-body{}
 #gameContainer{
     background-color:beige;
     padding:20px;
     font-size:3em;
     letter-spacing: 1rem;
+    text-align: center;
 }
-#btnContainer button{
-    font-family: monospace;
-    font-size: x-large;
-    margin-right:0.5em;
-    text-transform: uppercase;
+#buttonContainer button{
+    font-size: 2rem;
+    width:2.75rem;
+    height:2.75rem;
+    margin: 2rem 1rem;
+}
+#buttonContainer{
+    /* Not empty*/
+    text-align: center;
 }
 #statusWord{
     font-family:'Courier New', Courier, monospace;
     text-transform: uppercase;
     text-align:center;
+}
+#stats{
+    background:grey;
+    color:white;
+    padding:10px;
 }

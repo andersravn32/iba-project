@@ -1,13 +1,48 @@
 const gameContainer = document.getElementById('gameContainer')
-const alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z','æ','ø','å'];
 const onePlayerBtn = document.getElementById('oneplayerBtn');
 const twoPlayerBtn = document.getElementById('twoPlayerBtn');
+
+let ls = localStorage;
+// Update latest scores:
+const updateScores = () =>{
+    // Først reset
+    let scoreList = document.getElementById('scores');
+    scoreList.innerHTML = "";
+    if(ls.getItem('scores')){
+        let scores = JSON.parse(ls.getItem('scores'));
+        console.log(scores);
+        for(let i = 0; i < scores.length;i++){
+            let li = document.createElement('li');
+            if(scores[i].score == "hanged"){
+                li.innerText = scores[i].name + " døde under forsøg";
+            }else{
+                li.innerText = scores[i].name + " med " + scores[i].score + " forsøg";
+            }
+            scoreList.append(li);
+        }
+    }else{
+        // Show something else
+    }
+}
+updateScores();
 // The actual game:
 const game = (type, players) => {
     let userTries = 0; // This will count the tries by current user.
-    let maxTries = 5; // This is the max tries
+    let maxTries = 6; // This is the max tries
     let string = "";
     let clue = "";
+    const saveScore = (name, score) =>{
+        if(ls.getItem('scores')){
+            let scores = JSON.parse(ls.getItem('scores'));
+            console.log(scores);
+            scores.unshift({name:name, score:score});
+            ls.setItem('scores', JSON.stringify(scores));
+        }else{
+            let scores = [{name:name, score:score}];
+            ls.setItem('scores', JSON.stringify(scores));
+        }
+    }
+    gameContainer.innerHTML = "";
     // Build current player obj
     let currentPlayer = {
         name:"",
@@ -17,18 +52,19 @@ const game = (type, players) => {
     if(type == 0){
         // Set current playername:
         currentPlayer.name = players.name;
+        currentPlayer.turn = true;
         // code to generete randowm word:
         // We're using an static example
-        string = "123 some long ass text æøå";
-        clue = "the letters abc";
+        string = "abbc ddeffgg";
+        clue = "the letters abcdefg";
     }else{
         // Set current playername
         // Swich player turns as well
         if(players[0].turn == true){
-            players[0].turn == false;
+            players[0].turn = false;
             currentPlayer.name = players[0].name;
         }else{
-            players[0].turn == true;
+            players[0].turn = true;
             currentPlayer.name = players[1].name
         }
         // Ask the users to generate word:
@@ -64,37 +100,47 @@ const game = (type, players) => {
     }
     let wo = woFromString(string);
 
-
-
+    // Build statusWord on display:
+    let statusWord = document.createElement('p');
+    statusWord.setAttribute('id', 'statusWord');
+    gameContainer.append(statusWord);
     // Create the signs, we will run this every try until word is geuss or max tries is reached by user
     const updateStatus = (wo) =>{
-        gameContainer.innerHTML = "";
-        let statusWord = document.createElement('p')
-        statusWord.setAttribute('id', 'statusWord');
-        gameContainer.append(statusWord);
-        
-        // Creating delay effect
-        let speed = 200; // The speed of our effect
-        let i = 0; // our conter on the delay input
-        let length = wo.letters.length; // This is the length of the word.
-        const delayInput = () =>{ //  create a loop function
-            setTimeout(function() { //  call a setTimeout when the loop is called
-                if(wo.letters[i].used == false){ // If the letter is not choosen yet
-                    statusWord.innerText = statusWord.innerText + "_"; // Show a underscore
-                }else if(wo.letters[i].letter == " "){ // If letter is a space 
-                    statusWord.innerText = statusWord.innerText + "-"; // show a hyphen
-                }else{ // Else show everything else as they are
-                    statusWord.innerText = statusWord.innerText + wo.letters[i].letter;
-                }
-                i++; // increment our counter
-                if (i < length) { //  if the counter < count of the letters combined, call the loop function
-                delayInput(); //  a little recursion to use as loop
-                } // End of setTimeout()
-            }, speed)
+        statusWord.innerText = "";
+        for(let i = 0; wo.letters.length > i; i++){
+            if(wo.letters[i].used == false){ // If the letter is not choosen yet
+                statusWord.innerText = statusWord.innerText + "_"; // Show a underscore
+            }else if(wo.letters[i].letter == " "){ // If element is a space
+                statusWord.innerText = statusWord.innerText + "-"; // show a hyphen
+            }else{ // Else show everything else as they are, special characters and numericals
+                statusWord.innerText = statusWord.innerText + wo.letters[i].letter.toLowerCase();
+            }
         }
-        delayInput(); // Run the delay
     }
     updateStatus(wo);
+    // listen to input (the game loop):
+    // build the letters
+    const createLetterBtns = () =>{
+        // create a container and Append to gameContainer
+        let buttonContainer = document.createElement('div');
+        buttonContainer.setAttribute('id', 'buttonContainer');
+        gameContainer.append(buttonContainer);
+        const alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','æ','ø','å'];
+        for(let i = 0; i < alphabet.length; i++){
+            let btn = document.createElement('button');
+            btn.style.cursor = "pointer";
+            btn.innerText = alphabet[i];
+            btn.addEventListener('click', (event) => {
+                let letter = event.target.innerText;
+                event.target.classList.add('taken');
+                btn.setAttribute('disabled','');
+                // User clicked letter, check if letter exists in wo:
+                checkForLetter(letter); 
+            });
+            buttonContainer.append(btn);
+        }
+    }
+    createLetterBtns();
     // Append the reset button to
     const appendResetBtn = () =>{
         let resetButton = document.createElement('button');
@@ -102,29 +148,82 @@ const game = (type, players) => {
         resetButton.addEventListener('click', () => {
             location.reload();
         })
-        gameContainer.append(resetButton);
+        stats.append(resetButton);
     }
-    // Add the reset game button
-    appendResetBtn();
 
-    // listen to input (the game loop):
     // check letter is present in the word obj:
-    const letterIsHere = (letterToCheck, wo) =>{
-        for(let i = 0; wo.letters.length > i; i++){
-            if(wo.letters[i].letter == letterToCheck){
-                return true;
-            }else{
-                return false;
+    const checkForLetter = (letterToCheck) =>{
+        let noMatch = true;
+        for(let i = 0; i < wo.letters.length; i++){
+            if(wo.letters[i].letter.toLowerCase() == letterToCheck){
+                // We find a match
+                noMatch = false;
+                // Set the letter to used:
+                wo.letters[i].used = true;
+                // Since we found a match, code to checkIfWin goes here:
+
+                if(checkIfWin()){
+                    // We have a surviver:
+                    stopGame(1);
+                }else{
+                    // Update status word:
+                    updateStatus(wo);
+                }
+            }
+        }
+        if(noMatch == true){
+            userTries++;
+            // Check if the user has the max tries:
+            if(maxTries == userTries){
+                // Stop the game and set the other player
+                stopGame(0);
             }
         }
     }
-
-
-    // Build the buttons / keypress watch:
-
-
-    console.log(wo);
+    const checkIfWin = () => {
+        let win = true;
+        for(let i = 0; wo.letters.length > i; i++){
+            if(wo.letters[i].used == false){
+                win = false;
+            }
+        }
+        return win;
+    }
+    const stopGame = (win) => {
+        // Empty gameContainer
+        document.getElementById('buttonContainer').remove();
+        let message = document.createElement('h3');
+        // Check if user has not hanged:
+        if(win == 1){
+            updateStatus(wo);
+            message.innerText = "Tillykke! Du overlevede, med " + userTries + " forsøg!";
+            // save score and name to ls
+            saveScore(currentPlayer.name, userTries);
+            updateScores();
+        }else{
+            // show the word:
+            statusWord.innerText = "";
+            for(let i = 0; wo.letters.length > i; i++){
+                statusWord.innerText = statusWord.innerText + wo.letters[i].letter;
+            }
+            // Current user hanged:
+            message.innerText = "Tillykke, du er død! Bedre held næste gang.";
+            // Save score and name
+            saveScore(currentPlayer.name, 'hanged');
+            updateScores();
+        }
+        gameContainer.append(message);
+        let buttonForNext = document.createElement('button');
+        buttonForNext.innerText = "Spil videre";
+        buttonForNext.addEventListener('click', () => {
+            game(type, players);
+        })
+        gameContainer.append(buttonForNext);
+    }
     
+    // Add the reset game button, as users can reset a game
+    // appendResetBtn();
+    console.log(wo);
 }
 // Asking word a word in 2 player game:
 // set up one player game: Name
@@ -156,7 +255,3 @@ const setupTwoPlayer = () =>{
 
 onePlayerBtn.addEventListener('click', setupOnePlayer);
 twoPlayerBtn.addEventListener('click', setupTwoPlayer);
-const showKey = (e) =>{
-    // this event get the keyup value
-}
-document.addEventListener('keyup', showKey)
