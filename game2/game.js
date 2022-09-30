@@ -1,5 +1,5 @@
 const gameContainer = document.getElementById('gameContainer')
-const onePlayerBtn = document.getElementById('oneplayerBtn');
+const onePlayerBtn = document.getElementById('onePlayerBtn');
 const twoPlayerBtn = document.getElementById('twoPlayerBtn');
 
 let ls = localStorage;
